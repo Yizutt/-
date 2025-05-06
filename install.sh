@@ -2,16 +2,20 @@
 set -e
 
 echo "[+] 安装依赖..."
+
+# 切换或确认镜像源（你的脚本可能已有这部分）
+termux-change-repo -y >/dev/null 2>&1
+
+# 安装基础依赖
 pkg update -y
-pkg install -y python git
+pkg install -y python git python-pip
 
 echo "[+] 安装 Python 库..."
-pip install --upgrade pip
-pip install playwright beautifulsoup4 requests
+if [ -f requirements.txt ]; then
+    pip install --upgrade pip setuptools wheel
+    pip install -r requirements.txt
+else
+    echo "[!] 未找到 requirements.txt，跳过依赖安装。"
+fi
 
-echo "[+] 初始化 Playwright（首次运行需）..."
-playwright install
-
-echo "[+] 安装完成！"
-echo ">> 第一步：运行 python login_steam.py 手动登录 Steam"
-echo ">> 第二步：运行 python main.py 自动获取并领取可用免费游戏"
+echo "[+] 安装完成。"
